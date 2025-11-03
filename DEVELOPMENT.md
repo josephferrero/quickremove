@@ -1,6 +1,6 @@
 # Development Workflow
 
-This document describes the standard workflow for making changes to quickremove.nvim.
+This document describes the standard workflow for making changes to quicker.nvim.
 
 ## Standard Workflow
 
@@ -17,10 +17,10 @@ git checkout -b fix/bug-description
 ### 2. Make your changes
 
 Edit the relevant files:
-- **Plugin code**: `lua/quickremove/init.lua`
-- **Plugin loader**: `plugin/quickremove.vim`
-- **Tests**: `tests/quickremove_spec.lua`
-- **Documentation**: `README.md`, `doc/quickremove.txt`
+- **Plugin code**: `lua/quicker/init.lua`
+- **Plugin loader**: `plugin/quicker.vim`
+- **Tests**: `tests/quicker_spec.lua`
+- **Documentation**: `README.md`, `doc/quicker.txt`
 
 ### 3. Run tests
 
@@ -36,7 +36,7 @@ All tests must pass. If tests fail, fix the issues before proceeding.
 
 Update relevant documentation if your changes affect:
 - User-facing features → Update `README.md`
-- Commands/API → Update `doc/quickremove.txt`
+- Commands/API → Update `doc/quicker.txt`
 - Development process → Update this file
 - Test behavior → Update `tests/README.md`
 
@@ -83,17 +83,17 @@ git push -u origin feature/my-feature
 ## Project Structure
 
 ```
-quickremove/
-├── lua/quickremove/
+quicker/
+├── lua/quicker/
 │   └── init.lua          # Main plugin code
 ├── plugin/
-│   └── quickremove.vim   # Plugin entry point
+│   └── quicker.vim   # Plugin entry point
 ├── tests/
-│   ├── quickremove_spec.lua  # Test suite
+│   ├── quicker_spec.lua  # Test suite
 │   ├── minimal_init.lua      # Test config
 │   └── run_tests.sh          # Test runner
 ├── doc/
-│   └── quickremove.txt   # Vim help documentation
+│   └── quicker.txt   # Vim help documentation
 └── README.md             # User documentation
 ```
 
@@ -105,7 +105,7 @@ make test
 ```
 
 ### Adding a new test
-Edit `tests/quickremove_spec.lua` and add:
+Edit `tests/quicker_spec.lua` and add:
 ```lua
 test('Description of test', function()
   -- Test code here
@@ -114,14 +114,14 @@ end)
 ```
 
 ### Adding a new feature
-1. Update `lua/quickremove/init.lua` with your feature
-2. Add tests in `tests/quickremove_spec.lua`
+1. Update `lua/quicker/init.lua` with your feature
+2. Add tests in `tests/quicker_spec.lua`
 3. Update `README.md` with usage instructions
-4. Update `doc/quickremove.txt` if adding commands/API
+4. Update `doc/quicker.txt` if adding commands/API
 
 ### Fixing a bug
 1. Add a test that reproduces the bug
-2. Fix the bug in `lua/quickremove/init.lua`
+2. Fix the bug in `lua/quicker/init.lua`
 3. Verify the test passes
 4. Update documentation if behavior changed
 
@@ -134,8 +134,8 @@ When working on this project:
 4. **Check CI passes** after pushing
 
 Key files to understand:
-- `lua/quickremove/init.lua` - All plugin logic is here
-- `tests/quickremove_spec.lua` - All tests are here
+- `lua/quicker/init.lua` - All plugin logic is here
+- `tests/quicker_spec.lua` - All tests are here
 - `README.md` - User-facing documentation
 
 ## Testing Philosophy

@@ -1,6 +1,6 @@
-# quickremove.nvim
+# quicker.nvim
 
-A Neovim plugin that allows you to remove items from the quickfix and location lists interactively.
+Manage your quickfix and location lists with ease - remove items, add notes, and more.
 
 ## Features
 
@@ -27,9 +27,9 @@ The quickfix and location lists in Neovim are powerful tools for navigating sear
 
 ```lua
 {
-  'josephferrero/quickremove.nvim',
+  'josephferrero/quicker.nvim',
   config = function()
-    require('quickremove').setup({
+    require('quicker').setup({
       -- Optional: customize keymaps
       keymaps = {
         remove = 'dd',      -- Remove current item or visual selection
@@ -44,9 +44,9 @@ The quickfix and location lists in Neovim are powerful tools for navigating sear
 
 ```lua
 use {
-  'josephferrero/quickremove.nvim',
+  'josephferrero/quicker.nvim',
   config = function()
-    require('quickremove').setup()
+    require('quicker').setup()
   end
 }
 ```
@@ -54,11 +54,11 @@ use {
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
-Plug 'josephferrero/quickremove.nvim'
+Plug 'josephferrero/quicker.nvim'
 
 " In your init.vim or after plug#end()
 lua << EOF
-require('quickremove').setup()
+require('quicker').setup()
 EOF
 ```
 
@@ -67,7 +67,7 @@ EOF
 Clone the repository into your Neovim plugin directory:
 
 ```bash
-git clone https://github.com/josephferrero/quickremove.nvim ~/.local/share/nvim/site/pack/plugins/start/quickremove.nvim
+git clone https://github.com/josephferrero/quicker.nvim ~/.local/share/nvim/site/pack/plugins/start/quicker.nvim
 ```
 
 ## Usage
@@ -91,10 +91,10 @@ The plugin provides the following commands:
 
 | Command             | Description                                                |
 | ------------------- | ---------------------------------------------------------- |
-| `:QuickRemove`      | Remove items in the given range (e.g., `:5,10QuickRemove`) |
-| `:QuickRemoveClear` | Clear all items from the current list                      |
-| `:QuickRemoveUndo`  | Undo the last removal (can be called multiple times)       |
-| `:QuickAdd [text]`  | Add a new note/item (prompts if no text provided)          |
+| `:QuickerRemove`      | Remove items in the given range (e.g., `:5,10QuickerRemoveRemove`) |
+| `:QuickerClear` | Clear all items from the current list                      |
+| `:QuickerUndo`  | Undo the last removal (can be called multiple times)       |
+| `:QuickerAdd [text]`  | Add a new note/item (prompts if no text provided)          |
 
 ### Example Workflow
 
@@ -102,20 +102,20 @@ The plugin provides the following commands:
 2. Navigate to an item you want to remove
 3. Press `dd` to remove it
 4. Select multiple items in visual mode and press `dd` to remove them all
-5. If you make a mistake, use `:QuickRemoveUndo` to undo the last removal (supports up to 50 undo levels)
+5. If you make a mistake, use `:QuickerUndo` to undo the last removal (supports up to 50 undo levels)
 
 ### Visual Selection Examples
 
 ```
 " Remove items 5-10
-:5,10QuickRemove
+:5,10QuickerRemove
 
 " In visual mode, select lines and press dd
 V5j  " Select 6 lines
 dd   " Remove them
 
 " Remove all remaining items
-:QuickRemoveClear
+:QuickerClear
 ```
 
 ## Configuration
@@ -123,7 +123,7 @@ dd   " Remove them
 ### Default Configuration
 
 ```lua
-require('quickremove').setup({
+require('quicker').setup({
   keymaps = {
     remove = 'dd',      -- Remove current item or visual selection
     remove_range = 'x', -- Alternative keymap for removal
@@ -140,7 +140,7 @@ require('quickremove').setup({
 If you prefer to set up your own keymaps:
 
 ```lua
-require('quickremove').setup({
+require('quicker').setup({
   auto_setup_keymaps = false,
 })
 
@@ -150,7 +150,7 @@ vim.api.nvim_create_autocmd('FileType', {
   callback = function()
     local bufnr = vim.api.nvim_get_current_buf()
     vim.keymap.set('n', '<leader>qd', function()
-      require('quickremove').remove()
+      require('quicker').remove()
     end, { buffer = bufnr, desc = 'Remove quickfix item' })
   end,
 })
@@ -159,7 +159,7 @@ vim.api.nvim_create_autocmd('FileType', {
 #### Change Default Keymaps
 
 ```lua
-require('quickremove').setup({
+require('quicker').setup({
   keymaps = {
     remove = '<leader>d',
     remove_range = '<leader>x',
@@ -175,12 +175,12 @@ If you want full control over when the plugin is initialized:
 
 ```vim
 " In your init.vim
-let g:quickremove_no_default_setup = 1
+let g:quicker_no_default_setup = 1
 ```
 
 ```lua
 -- Then manually call setup in your Lua config
-require('quickremove').setup()
+require('quicker').setup()
 ```
 
 ## API
@@ -188,22 +188,22 @@ require('quickremove').setup()
 For advanced users, the plugin exposes the following Lua API:
 
 ```lua
-local quickremove = require('quickremove')
+local quicker = require('quicker')
 
 -- Remove current item or visual selection
-quickremove.remove()
+quicker.remove()
 
 -- Remove items by line range
-quickremove.remove_range(start_line, end_line)
+quicker.remove_range(start_line, end_line)
 
 -- Clear all items from the list
-quickremove.clear()
+quicker.clear()
 
 -- Undo the last removal
-quickremove.undo()
+quicker.undo()
 
 -- Setup keymaps manually
-quickremove.setup_keymaps()
+quicker.setup_keymaps()
 ```
 
 ## How It Works
@@ -211,7 +211,7 @@ quickremove.setup_keymaps()
 - When you open a quickfix or location list, the plugin saves the original list
 - When you remove items, it creates a new list without those items and updates the display
 - The cursor position is automatically adjusted to stay in a sensible location
-- You can undo removals one at a time using `:QuickRemoveUndo` (supports up to 50 undo levels)
+- You can undo removals one at a time using `:QuickerUndo` (supports up to 50 undo levels)
 
 ## Troubleshooting
 
