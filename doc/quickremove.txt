@@ -1,0 +1,207 @@
+*quickremove.txt*  Remove items from quickfix and location lists
+
+Author:  quickremove.nvim contributors
+License: MIT
+Version: 1.0.0
+
+==============================================================================
+CONTENTS                                                 *quickremove-contents*
+
+    1. Introduction ........................... |quickremove-introduction|
+    2. Requirements ........................... |quickremove-requirements|
+    3. Setup .................................. |quickremove-setup|
+    4. Usage .................................. |quickremove-usage|
+    5. Configuration .......................... |quickremove-configuration|
+    6. Commands ............................... |quickremove-commands|
+    7. API .................................... |quickremove-api|
+    8. Troubleshooting ........................ |quickremove-troubleshooting|
+
+==============================================================================
+INTRODUCTION                                         *quickremove-introduction*
+
+quickremove.nvim is a plugin that allows you to interactively remove items
+from Neovim's quickfix and location lists. This is useful when you want to
+filter out irrelevant items or items you've already addressed.
+
+Features:
+  - Remove individual items with `dd`
+  - Remove multiple items with visual selection
+  - Undo removals to restore the original list
+  - Clear all items at once
+  - Customizable keymaps
+  - Works with both quickfix and location lists
+
+==============================================================================
+REQUIREMENTS                                         *quickremove-requirements*
+
+- Neovim >= 0.7.0
+
+==============================================================================
+SETUP                                                       *quickremove-setup*
+
+Add the following to your configuration:
+
+For lazy.nvim: >lua
+    {
+      'josephferrero/quickremove.nvim',
+      config = function()
+        require('quickremove').setup()
+      end,
+    }
+<
+
+For packer.nvim: >lua
+    use {
+      'josephferrero/quickremove.nvim',
+      config = function()
+        require('quickremove').setup()
+      end
+    }
+<
+
+For vim-plug: >vim
+    Plug 'josephferrero/quickremove.nvim'
+
+    lua << EOF
+    require('quickremove').setup()
+    EOF
+<
+
+==============================================================================
+USAGE                                                       *quickremove-usage*
+
+Once installed, the plugin automatically sets up keymaps when you open a
+quickfix or location list window.
+
+Default Keymaps:~
+    Normal mode:
+        dd        Remove current item
+        x         Remove current item (alternative)
+
+    Visual mode:
+        dd        Remove selected items
+        x         Remove selected items (alternative)
+
+Example Workflow:~
+    1. Open a quickfix list (e.g., `:grep "TODO" **/*.lua`)
+    2. Navigate to an item you want to remove
+    3. Press `dd` to remove it
+    4. Select multiple items in visual mode and press `dd`
+    5. Use `:QuickRemoveUndo` to restore the original list if needed
+
+==============================================================================
+CONFIGURATION                                       *quickremove-configuration*
+
+The plugin can be configured by passing options to the setup function:
+
+>lua
+    require('quickremove').setup({
+      keymaps = {
+        remove = 'dd',      -- Keymap to remove items
+        remove_range = 'x', -- Alternative keymap
+      },
+      auto_setup_keymaps = true,  -- Automatically set up keymaps
+    })
+<
+
+Configuration Options:~
+    keymaps.remove              (string)
+        Default: 'dd'
+        Keymap to remove the current item or visual selection.
+
+    keymaps.remove_range        (string)
+        Default: 'x'
+        Alternative keymap to remove items.
+
+    auto_setup_keymaps          (boolean)
+        Default: true
+        Whether to automatically set up keymaps in quickfix/location
+        list windows.
+
+Disable Auto-Setup:~
+To prevent the plugin from automatically calling setup(), add this to your
+init.vim before loading plugins:
+
+>vim
+    let g:quickremove_no_default_setup = 1
+<
+
+Then manually call setup in your config.
+
+==============================================================================
+COMMANDS                                                 *quickremove-commands*
+
+:QuickRemove [range]                                            *:QuickRemove*
+    Remove items in the given range from the quickfix or location list.
+
+    Examples: >vim
+        :5,10QuickRemove    " Remove items 5 through 10
+        :%QuickRemove       " Remove all items
+<
+
+:QuickRemoveClear                                          *:QuickRemoveClear*
+    Clear all items from the current quickfix or location list.
+
+:QuickRemoveUndo                                            *:QuickRemoveUndo*
+    Restore the original quickfix or location list, undoing all removals.
+    This restores the list to its state when you first opened the
+    quickfix/location list window.
+
+==============================================================================
+API                                                           *quickremove-api*
+
+For advanced users, the plugin exposes a Lua API:
+
+require('quickremove').remove()                         *quickremove.remove()*
+    Remove the current item or visual selection from the list.
+
+require('quickremove').remove_range({line1}, {line2})
+                                                    *quickremove.remove_range()*
+    Remove items from line {line1} to {line2} (inclusive, 1-indexed).
+
+    Parameters:~
+        {line1}  (number) Starting line number
+        {line2}  (number) Ending line number
+
+require('quickremove').clear()                           *quickremove.clear()*
+    Clear all items from the current quickfix or location list.
+
+require('quickremove').undo()                             *quickremove.undo()*
+    Restore the original list, undoing all removals.
+
+require('quickremove').save_original()             *quickremove.save_original()*
+    Save the current list as the original for undo purposes.
+    This is automatically called when opening a quickfix/location list.
+
+require('quickremove').setup_keymaps()             *quickremove.setup_keymaps()*
+    Manually set up keymaps for quickfix/location list windows.
+    This is automatically called by setup() unless auto_setup_keymaps
+    is disabled.
+
+require('quickremove').setup({opts})                      *quickremove.setup()*
+    Initialize the plugin with optional configuration.
+
+    Parameters:~
+        {opts}  (table|nil) Configuration options (see |quickremove-configuration|)
+
+==============================================================================
+TROUBLESHOOTING                                   *quickremove-troubleshooting*
+
+Keymaps Not Working:~
+    1. Verify you're in a quickfix window: `:echo &filetype`
+       Should show: qf
+    2. Check for conflicting keymaps from other plugins
+    3. Try setting custom keymaps in your configuration
+
+Plugin Not Loading:~
+    1. Check Neovim version: `:version` (need >= 0.7.0)
+    2. Verify plugin installation: `:Lazy` or `:PackerStatus`
+    3. Check for errors: `:messages`
+
+Items Not Being Removed:~
+    1. Make sure the list is not empty
+    2. Verify the line numbers are valid
+    3. Check `:messages` for error notifications
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
