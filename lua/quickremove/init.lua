@@ -7,16 +7,17 @@ local M = {}
 M.config = {
   -- Keymaps for quickfix/loclist windows
   keymaps = {
-    remove = 'dd',      -- Remove current item or visual selection
+    remove = 'dd', -- Remove current item or visual selection
     remove_range = 'x', -- Alternative keymap for removal
   },
   -- Whether to automatically set up keymaps
   auto_setup_keymaps = true,
 }
 
--- Internal state
-local original_qf_list = {}
-local original_loc_list = {}
+-- Internal state - undo stacks
+local qf_undo_stack = {}
+local loc_undo_stack = {}
+local max_undo_levels = 50
 
 --- Check if current window is a quickfix or location list window
 --- @return string|nil 'qf' for quickfix, 'loc' for location list, nil for neither
@@ -91,6 +92,15 @@ local function remove_items(start_line, end_line)
     end_line = start_line
   end
 
+  -- Save current state to undo stack before making changes
+  local undo_stack = list_type == 'qf' and qf_undo_stack or loc_undo_stack
+  table.insert(undo_stack, vim.deepcopy(items))
+
+  -- Limit undo stack size
+  if #undo_stack > max_undo_levels then
+    table.remove(undo_stack, 1)
+  end
+
   -- Save cursor position
   local cursor_pos = vim.fn.line('.')
 
@@ -153,7 +163,7 @@ M.remove_range = function(line1, line2)
   remove_items(line1, line2)
 end
 
---- Undo the last removal (restore original list)
+--- Undo the last removal
 M.undo = function()
   local list_type = get_list_type()
 
@@ -162,33 +172,23 @@ M.undo = function()
     return
   end
 
-  local original = list_type == 'qf' and original_qf_list or original_loc_list
+  local undo_stack = list_type == 'qf' and qf_undo_stack or loc_undo_stack
 
-  if #original == 0 then
-    vim.notify('quickremove: No original list to restore', vim.log.levels.WARN)
+  if #undo_stack == 0 then
+    vim.notify('quickremove: Nothing to undo', vim.log.levels.WARN)
     return
   end
 
-  set_list(list_type, original, 'r')
-  vim.notify('quickremove: Restored original list', vim.log.levels.INFO)
+  -- Pop the last state from the stack
+  local previous_state = table.remove(undo_stack)
+
+  -- Restore it
+  set_list(list_type, previous_state, 'r')
+
+  local list_name = list_type == 'qf' and 'quickfix' or 'location'
+  vim.notify(string.format('quickremove: Undid last removal (%d items remaining)', #previous_state), vim.log.levels.INFO)
 end
 
---- Save the current list as the original (for undo functionality)
-M.save_original = function()
-  local list_type = get_list_type()
-
-  if not list_type then
-    return
-  end
-
-  local items = get_list(list_type)
-
-  if list_type == 'qf' then
-    original_qf_list = vim.deepcopy(items)
-  elseif list_type == 'loc' then
-    original_loc_list = vim.deepcopy(items)
-  end
-end
 
 --- Clear all items from the current list
 M.clear = function()
@@ -197,6 +197,18 @@ M.clear = function()
   if not list_type then
     vim.notify('quickremove: Not in a quickfix or location list window', vim.log.levels.WARN)
     return
+  end
+
+  -- Save current state to undo stack before clearing
+  local items = get_list(list_type)
+  if #items > 0 then
+    local undo_stack = list_type == 'qf' and qf_undo_stack or loc_undo_stack
+    table.insert(undo_stack, vim.deepcopy(items))
+
+    -- Limit undo stack size
+    if #undo_stack > max_undo_levels then
+      table.remove(undo_stack, 1)
+    end
   end
 
   set_list(list_type, {}, 'r')
@@ -218,9 +230,6 @@ M.setup_keymaps = function()
     pattern = 'qf',
     callback = function()
       local bufnr = vim.api.nvim_get_current_buf()
-
-      -- Save original list when opening
-      M.save_original()
 
       -- Normal mode keymap
       if config.keymaps.remove then
