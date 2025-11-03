@@ -6,7 +6,7 @@ A Neovim plugin that allows you to remove items from the quickfix and location l
 
 - 🗑️ Remove individual items from quickfix/location lists with `dd`
 - 📦 Remove multiple items using visual selection
-- ↩️ Undo removals to restore the original list
+- ↩️ Undo removals with full undo history (up to 50 levels)
 - 🧹 Clear all items from the list
 - ⚙️ Customizable keymaps
 - 🎯 Works seamlessly with both quickfix and location lists
@@ -90,7 +90,7 @@ The plugin provides the following commands:
 | ------------------- | ---------------------------------------------------------- |
 | `:QuickRemove`      | Remove items in the given range (e.g., `:5,10QuickRemove`) |
 | `:QuickRemoveClear` | Clear all items from the current list                      |
-| `:QuickRemoveUndo`  | Restore the original list (undo all removals)              |
+| `:QuickRemoveUndo`  | Undo the last removal (can be called multiple times)       |
 
 ### Example Workflow
 
@@ -98,7 +98,7 @@ The plugin provides the following commands:
 2. Navigate to an item you want to remove
 3. Press `dd` to remove it
 4. Select multiple items in visual mode and press `dd` to remove them all
-5. If you make a mistake, use `:QuickRemoveUndo` to restore the original list
+5. If you make a mistake, use `:QuickRemoveUndo` to undo the last removal (supports up to 50 undo levels)
 
 ### Visual Selection Examples
 
@@ -193,11 +193,8 @@ quickremove.remove_range(start_line, end_line)
 -- Clear all items from the list
 quickremove.clear()
 
--- Restore original list (undo)
+-- Undo the last removal
 quickremove.undo()
-
--- Save current list as original (for undo)
-quickremove.save_original()
 
 -- Setup keymaps manually
 quickremove.setup_keymaps()
@@ -208,7 +205,7 @@ quickremove.setup_keymaps()
 - When you open a quickfix or location list, the plugin saves the original list
 - When you remove items, it creates a new list without those items and updates the display
 - The cursor position is automatically adjusted to stay in a sensible location
-- You can undo all removals to restore the original list using `:QuickRemoveUndo`
+- You can undo removals one at a time using `:QuickRemoveUndo` (supports up to 50 undo levels)
 
 ## Troubleshooting
 
@@ -224,9 +221,39 @@ quickremove.setup_keymaps()
 2. Verify the plugin is installed correctly (`:Lazy` or `:PackerStatus`)
 3. Check for errors in `:messages`
 
+## Development
+
+### Running Tests
+
+The plugin includes a comprehensive test suite:
+
+```bash
+# Run all tests
+make test
+
+# Or directly
+./tests/run_tests.sh
+```
+
+See [tests/README.md](tests/README.md) for more information about testing.
+
+### Making Changes
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run the test suite: `make test`
+5. Submit a pull request
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit issues or pull requests.
+
+When contributing code:
+- Ensure all tests pass
+- Add tests for new features
+- Follow the existing code style
+- Update documentation as needed
 
 ## License
 
