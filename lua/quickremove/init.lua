@@ -334,6 +334,8 @@ M.setup_keymaps = function()
           buffer = bufnr,
           silent = true,
           desc = 'Add a new item to the list',
+        })
+      end
 
       -- Undo keymap
       if config.keymaps.undo then
@@ -343,7 +345,6 @@ M.setup_keymaps = function()
           buffer = bufnr,
           silent = true,
           desc = 'Undo last removal',
-
         })
       end
     end,
