@@ -10,6 +10,7 @@ M.config = {
     remove = 'dd', -- Remove current item or visual selection
     remove_range = 'x', -- Alternative keymap for removal
     add = 'a', -- Add a new item to the list
+    undo = 'u', -- Undo last removal
   },
   -- Whether to automatically set up keymaps
   auto_setup_keymaps = true,
@@ -333,6 +334,16 @@ M.setup_keymaps = function()
           buffer = bufnr,
           silent = true,
           desc = 'Add a new item to the list',
+
+      -- Undo keymap
+      if config.keymaps.undo then
+        vim.keymap.set('n', config.keymaps.undo, function()
+          M.undo()
+        end, {
+          buffer = bufnr,
+          silent = true,
+          desc = 'Undo last removal',
+
         })
       end
     end,

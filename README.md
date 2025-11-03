@@ -83,6 +83,7 @@ When you open a quickfix or location list window, the following keymaps are auto
 | Normal | `x`    | Remove the current item (alternative)   |
 | Visual | `x`    | Remove all selected items (alternative) |
 | Normal | `a`    | Add a new note/item to the list         |
+| Normal | `u`    | Undo the last removal                   |
 
 ### Commands
 
@@ -163,6 +164,7 @@ require('quickremove').setup({
     remove = '<leader>d',
     remove_range = '<leader>x',
     add = '<leader>a',
+    undo = '<leader>u',
   },
 })
 ```
