@@ -6,6 +6,7 @@ A Neovim plugin that allows you to remove items from the quickfix and location l
 
 - 🗑️ Remove individual items from quickfix/location lists with `dd`
 - 📦 Remove multiple items using visual selection
+- ➕ Add custom notes/items to the list with `a`
 - ↩️ Undo removals with full undo history (up to 50 levels)
 - 🧹 Clear all items from the list
 - ⚙️ Customizable keymaps
@@ -81,6 +82,7 @@ When you open a quickfix or location list window, the following keymaps are auto
 | Visual | `dd`   | Remove all selected items               |
 | Normal | `x`    | Remove the current item (alternative)   |
 | Visual | `x`    | Remove all selected items (alternative) |
+| Normal | `a`    | Add a new note/item to the list         |
 
 ### Commands
 
@@ -91,6 +93,7 @@ The plugin provides the following commands:
 | `:QuickRemove`      | Remove items in the given range (e.g., `:5,10QuickRemove`) |
 | `:QuickRemoveClear` | Clear all items from the current list                      |
 | `:QuickRemoveUndo`  | Undo the last removal (can be called multiple times)       |
+| `:QuickAdd [text]`  | Add a new note/item (prompts if no text provided)          |
 
 ### Example Workflow
 
@@ -159,6 +162,7 @@ require('quickremove').setup({
   keymaps = {
     remove = '<leader>d',
     remove_range = '<leader>x',
+    add = '<leader>a',
   },
 })
 ```
