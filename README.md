@@ -81,6 +81,7 @@ When you open a quickfix or location list window, the following keymaps are auto
 | Visual | `dd`   | Remove all selected items               |
 | Normal | `x`    | Remove the current item (alternative)   |
 | Visual | `x`    | Remove all selected items (alternative) |
+| Normal | `u`    | Undo the last removal                   |
 
 ### Commands
 
@@ -159,6 +160,7 @@ require('quickremove').setup({
   keymaps = {
     remove = '<leader>d',
     remove_range = '<leader>x',
+    undo = '<leader>u',
   },
 })
 ```
