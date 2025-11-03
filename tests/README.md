@@ -1,6 +1,6 @@
 # Tests
 
-This directory contains the test suite for quickremove.nvim.
+This directory contains the test suite for quicker.nvim.
 
 ## Running Tests
 
@@ -21,7 +21,7 @@ make test
 
 ## Test Files
 
-- **`quickremove_spec.lua`** - Main test suite with all test cases
+- **`quicker_spec.lua`** - Main test suite with all test cases
 - **`minimal_init.lua`** - Minimal Neovim configuration for testing
 - **`run_tests.sh`** - Shell script to run tests (can be used in CI)
 

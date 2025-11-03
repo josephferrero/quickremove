@@ -1,10 +1,10 @@
--- Example configuration for quickremove.nvim
+-- Example configuration for quicker.nvim
 
 -- Basic setup with defaults
-require('quickremove').setup()
+require('quicker').setup()
 
 -- Custom configuration
-require('quickremove').setup({
+require('quicker').setup({
   keymaps = {
     remove = 'dd', -- Remove current item or selection
     remove_range = 'x', -- Alternative removal keymap
@@ -13,7 +13,7 @@ require('quickremove').setup({
 })
 
 -- Advanced: Disable auto keymaps and set up manually
-require('quickremove').setup({
+require('quicker').setup({
   auto_setup_keymaps = false,
 })
 
@@ -22,11 +22,11 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = 'qf',
   callback = function()
     local bufnr = vim.api.nvim_get_current_buf()
-    local quickremove = require('quickremove')
+    local quicker = require('quicker')
 
     -- Custom keymap: leader+d to remove
     vim.keymap.set('n', '<leader>qd', function()
-      quickremove.remove()
+      quicker.remove()
     end, {
       buffer = bufnr,
       silent = true,
@@ -35,7 +35,7 @@ vim.api.nvim_create_autocmd('FileType', {
 
     -- Custom keymap: leader+c to clear all
     vim.keymap.set('n', '<leader>qc', function()
-      quickremove.clear()
+      quicker.clear()
     end, {
       buffer = bufnr,
       silent = true,
@@ -44,7 +44,7 @@ vim.api.nvim_create_autocmd('FileType', {
 
     -- Custom keymap: leader+u to undo
     vim.keymap.set('n', '<leader>qu', function()
-      quickremove.undo()
+      quicker.undo()
     end, {
       buffer = bufnr,
       silent = true,
@@ -55,10 +55,10 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- Example: Use with lazy.nvim
 -- {
---   'josephferrero/quickremove.nvim',
+--   'josephferrero/quicker.nvim',
 --   event = 'VeryLazy',
 --   config = function()
---     require('quickremove').setup({
+--     require('quicker').setup({
 --       keymaps = {
 --         remove = 'dd',
 --         remove_range = 'x',
@@ -69,8 +69,8 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- Example: Use with packer.nvim
 -- use {
---   'josephferrero/quickremove.nvim',
+--   'josephferrero/quicker.nvim',
 --   config = function()
---     require('quickremove').setup()
+--     require('quicker').setup()
 --   end
 -- }

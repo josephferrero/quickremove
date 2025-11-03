@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test runner script for quickremove.nvim
+# Test runner script for quicker.nvim
 # Can be run locally or in CI
 
 set -e
@@ -15,7 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 echo "======================================="
-echo "Running quickremove.nvim tests"
+echo "Running quicker.nvim tests"
 echo "======================================="
 echo ""
 echo "Project directory: $PROJECT_DIR"
@@ -30,7 +30,7 @@ echo "Running test suite..."
 echo ""
 
 if nvim --headless -u tests/minimal_init.lua \
-  -c "lua require('tests.quickremove_spec')" 2>&1; then
+  -c "lua require('tests.quicker_spec')" 2>&1; then
   echo ""
   echo -e "${GREEN}✓ Tests completed successfully${NC}"
   exit 0

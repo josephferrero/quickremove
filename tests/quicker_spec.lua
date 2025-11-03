@@ -1,5 +1,5 @@
--- Test suite for quickremove.nvim
--- Can be run with: nvim --headless -u tests/minimal_init.lua -c "lua require('tests.quickremove_spec')"
+-- Test suite for quicker.nvim
+-- Can be run with: nvim --headless -u tests/minimal_init.lua -c "lua require('tests.quicker_spec')"
 
 local M = {}
 
@@ -30,26 +30,26 @@ local function assert_eq(actual, expected, msg)
 end
 
 -- Setup
-local quickremove = require('quickremove')
-quickremove.setup()
+local quicker = require('quicker')
+quicker.setup()
 
-print('=== QUICKREMOVE.NVIM TEST SUITE ===\n')
+print('=== QUICKER.NVIM TEST SUITE ===\n')
 
 -- Test 1: Plugin loads
 test('Plugin loads without errors', function()
-  assert(quickremove ~= nil, 'quickremove module not loaded')
-  assert(quickremove.setup ~= nil, 'setup function not found')
-  assert(quickremove.remove ~= nil, 'remove function not found')
-  assert(quickremove.undo ~= nil, 'undo function not found')
-  assert(quickremove.clear ~= nil, 'clear function not found')
+  assert(quicker ~= nil, 'quicker module not loaded')
+  assert(quicker.setup ~= nil, 'setup function not found')
+  assert(quicker.remove ~= nil, 'remove function not found')
+  assert(quicker.undo ~= nil, 'undo function not found')
+  assert(quicker.clear ~= nil, 'clear function not found')
 end)
 
 -- Test 2: Commands registered
 test('Commands are registered', function()
   local commands = vim.api.nvim_get_commands({})
-  assert(commands.QuickRemove ~= nil, 'QuickRemove command not registered')
-  assert(commands.QuickRemoveClear ~= nil, 'QuickRemoveClear command not registered')
-  assert(commands.QuickRemoveUndo ~= nil, 'QuickRemoveUndo command not registered')
+  assert(commands.QuickerRemove ~= nil, 'QuickerRemove command not registered')
+  assert(commands.QuickerClear ~= nil, 'QuickerClear command not registered')
+  assert(commands.QuickerUndo ~= nil, 'QuickerUndo command not registered')
 end)
 
 -- Test 3: Basic removal from quickfix
@@ -61,7 +61,7 @@ test('Basic quickfix removal works', function()
   })
   vim.cmd('copen')
   vim.fn.cursor(2, 1)
-  quickremove.remove_range(2, 2)
+  quicker.remove_range(2, 2)
   local count = #vim.fn.getqflist()
   assert_eq(count, 2, 'Expected 2 items after removal')
   vim.cmd('cclose')
@@ -70,7 +70,7 @@ end)
 -- Test 4: Undo works
 test('Undo restoration works', function()
   vim.cmd('copen')
-  quickremove.undo()
+  quicker.undo()
   local count = #vim.fn.getqflist()
   assert_eq(count, 3, 'Expected 3 items after undo')
   vim.cmd('cclose')
@@ -87,13 +87,13 @@ test('Multiple sequential removals work', function()
   }, 'r')
   vim.cmd('copen')
 
-  quickremove.remove_range(1, 1)
+  quicker.remove_range(1, 1)
   assert_eq(#vim.fn.getqflist(), 4, 'Expected 4 items after first removal')
 
-  quickremove.remove_range(1, 1)
+  quicker.remove_range(1, 1)
   assert_eq(#vim.fn.getqflist(), 3, 'Expected 3 items after second removal')
 
-  quickremove.remove_range(1, 1)
+  quicker.remove_range(1, 1)
   assert_eq(#vim.fn.getqflist(), 2, 'Expected 2 items after third removal')
 
   vim.cmd('cclose')
@@ -103,13 +103,13 @@ end)
 test('Multiple undo levels work', function()
   vim.cmd('copen')
 
-  quickremove.undo()
+  quicker.undo()
   assert_eq(#vim.fn.getqflist(), 3, 'Expected 3 items after first undo')
 
-  quickremove.undo()
+  quicker.undo()
   assert_eq(#vim.fn.getqflist(), 4, 'Expected 4 items after second undo')
 
-  quickremove.undo()
+  quicker.undo()
   assert_eq(#vim.fn.getqflist(), 5, 'Expected 5 items after third undo')
 
   vim.cmd('cclose')
@@ -126,7 +126,7 @@ test('Range removal works', function()
   }, 'r')
   vim.cmd('copen')
 
-  quickremove.remove_range(2, 4)
+  quicker.remove_range(2, 4)
   local count = #vim.fn.getqflist()
   assert_eq(count, 2, 'Expected 2 items after range removal')
 
@@ -145,7 +145,7 @@ test('Clear function works', function()
   }, 'r')
   vim.cmd('copen')
 
-  quickremove.clear()
+  quicker.clear()
   assert_eq(#vim.fn.getqflist(), 0, 'List should be empty after clear')
 
   vim.cmd('cclose')
@@ -159,10 +159,10 @@ test('Undo after clear restores list', function()
   }, 'r')
   vim.cmd('copen')
 
-  quickremove.clear()
+  quicker.clear()
   assert_eq(#vim.fn.getqflist(), 0, 'List should be empty after clear')
 
-  quickremove.undo()
+  quicker.undo()
   assert_eq(#vim.fn.getqflist(), 2, 'Undo should restore cleared list')
 
   vim.cmd('cclose')
@@ -177,11 +177,11 @@ test('Location list works', function()
   })
   vim.cmd('lopen')
 
-  quickremove.remove_range(2, 2)
+  quicker.remove_range(2, 2)
   local count = #vim.fn.getloclist(0)
   assert_eq(count, 2, 'Expected 2 items in location list')
 
-  quickremove.undo()
+  quicker.undo()
   count = #vim.fn.getloclist(0)
   assert_eq(count, 3, 'Expected 3 items after undo')
 
@@ -194,7 +194,7 @@ test('Empty list handling works', function()
   vim.cmd('copen')
 
   -- Should not crash on empty list
-  quickremove.remove_range(1, 1)
+  quicker.remove_range(1, 1)
   assert_eq(#vim.fn.getqflist(), 0, 'List should still be empty')
 
   vim.cmd('cclose')
@@ -209,7 +209,7 @@ test('Invalid range handling works', function()
   vim.cmd('copen')
 
   -- Should not crash on out of bounds
-  quickremove.remove_range(10, 20)
+  quicker.remove_range(10, 20)
   -- List should be unchanged
   assert_eq(#vim.fn.getqflist(), 2, 'List should be unchanged')
 
@@ -225,7 +225,7 @@ test('Add item works', function()
   vim.cmd('copen')
 
   -- We can't test vim.ui.input interactively, so we'll use the command with args
-  vim.cmd('QuickAdd This is a test note')
+  vim.cmd('QuickerAdd This is a test note')
 
   local items = vim.fn.getqflist()
   assert_eq(#items, 3, 'Expected 3 items after adding')

@@ -1,4 +1,4 @@
--- quickremove.nvim - Remove items from quickfix and location lists
+-- quicker.nvim - Manage quickfix and location lists with ease
 -- Main module
 
 local M = {}
@@ -72,7 +72,7 @@ local function remove_items(start_line, end_line)
   local list_type = get_list_type()
 
   if not list_type then
-    vim.notify('quickremove: Not in a quickfix or location list window', vim.log.levels.WARN)
+    vim.notify('quicker: Not in a quickfix or location list window', vim.log.levels.WARN)
     return
   end
 
@@ -80,13 +80,13 @@ local function remove_items(start_line, end_line)
   local items = get_list(list_type)
 
   if #items == 0 then
-    vim.notify('quickremove: List is empty', vim.log.levels.INFO)
+    vim.notify('quicker: List is empty', vim.log.levels.INFO)
     return
   end
 
   -- Validate line numbers
   if start_line < 1 or start_line > #items then
-    vim.notify('quickremove: Invalid line number', vim.log.levels.ERROR)
+    vim.notify('quicker: Invalid line number', vim.log.levels.ERROR)
     return
   end
 
@@ -135,7 +135,7 @@ local function remove_items(start_line, end_line)
   -- Notify user
   local count = end_line - start_line + 1
   local msg = string.format(
-    'quickremove: Removed %d item%s from %s list (%d remaining)',
+    'quicker: Removed %d item%s from %s list (%d remaining)',
     count,
     count == 1 and '' or 's',
     list_type == 'qf' and 'quickfix' or 'location',
@@ -170,14 +170,14 @@ M.undo = function()
   local list_type = get_list_type()
 
   if not list_type then
-    vim.notify('quickremove: Not in a quickfix or location list window', vim.log.levels.WARN)
+    vim.notify('quicker: Not in a quickfix or location list window', vim.log.levels.WARN)
     return
   end
 
   local undo_stack = list_type == 'qf' and qf_undo_stack or loc_undo_stack
 
   if #undo_stack == 0 then
-    vim.notify('quickremove: Nothing to undo', vim.log.levels.WARN)
+    vim.notify('quicker: Nothing to undo', vim.log.levels.WARN)
     return
   end
 
@@ -188,7 +188,7 @@ M.undo = function()
   set_list(list_type, previous_state, 'r')
 
   local list_name = list_type == 'qf' and 'quickfix' or 'location'
-  vim.notify(string.format('quickremove: Undid last removal (%d items remaining)', #previous_state), vim.log.levels.INFO)
+  vim.notify(string.format('quicker: Undid last removal (%d items remaining)', #previous_state), vim.log.levels.INFO)
 end
 
 --- Add a new item to the list
@@ -196,7 +196,7 @@ M.add = function()
   local list_type = get_list_type()
 
   if not list_type then
-    vim.notify('quickremove: Not in a quickfix or location list window', vim.log.levels.WARN)
+    vim.notify('quicker: Not in a quickfix or location list window', vim.log.levels.WARN)
     return
   end
 
@@ -240,7 +240,7 @@ M.add = function()
     vim.fn.cursor(cursor_line + 1, 1)
 
     local list_name = list_type == 'qf' and 'quickfix' or 'location'
-    vim.notify(string.format('quickremove: Added note to %s list', list_name), vim.log.levels.INFO)
+    vim.notify(string.format('quicker: Added note to %s list', list_name), vim.log.levels.INFO)
   end)
 end
 
@@ -249,7 +249,7 @@ M.clear = function()
   local list_type = get_list_type()
 
   if not list_type then
-    vim.notify('quickremove: Not in a quickfix or location list window', vim.log.levels.WARN)
+    vim.notify('quicker: Not in a quickfix or location list window', vim.log.levels.WARN)
     return
   end
 
@@ -268,7 +268,7 @@ M.clear = function()
   set_list(list_type, {}, 'r')
 
   local list_name = list_type == 'qf' and 'quickfix' or 'location'
-  vim.notify(string.format('quickremove: Cleared %s list', list_name), vim.log.levels.INFO)
+  vim.notify(string.format('quicker: Cleared %s list', list_name), vim.log.levels.INFO)
 end
 
 --- Setup keymaps for quickfix/loclist windows
@@ -276,7 +276,7 @@ M.setup_keymaps = function()
   local config = M.config
 
   -- Create an autocommand group
-  local group = vim.api.nvim_create_augroup('QuickRemove', { clear = true })
+  local group = vim.api.nvim_create_augroup('Quicker', { clear = true })
 
   -- Set up keymaps when entering quickfix or location list
   vim.api.nvim_create_autocmd('FileType', {
@@ -365,32 +365,32 @@ M.setup = function(opts)
   end
 
   -- Create user commands
-  vim.api.nvim_create_user_command('QuickRemove', function(cmd_opts)
+  vim.api.nvim_create_user_command('QuickerRemove', function(cmd_opts)
     M.remove_range(cmd_opts.line1, cmd_opts.line2)
   end, {
     range = true,
     desc = 'Remove items from quickfix/location list',
   })
 
-  vim.api.nvim_create_user_command('QuickRemoveClear', function()
+  vim.api.nvim_create_user_command('QuickerClear', function()
     M.clear()
   end, {
     desc = 'Clear all items from quickfix/location list',
   })
 
-  vim.api.nvim_create_user_command('QuickRemoveUndo', function()
+  vim.api.nvim_create_user_command('QuickerUndo', function()
     M.undo()
   end, {
     desc = 'Restore original quickfix/location list',
   })
 
-  vim.api.nvim_create_user_command('QuickAdd', function(cmd_opts)
+  vim.api.nvim_create_user_command('QuickerAdd', function(cmd_opts)
     local text = cmd_opts.args
     if text and text ~= '' then
       -- If text is provided, add it directly without prompting
       local list_type = get_list_type()
       if not list_type then
-        vim.notify('quickremove: Not in a quickfix or location list window', vim.log.levels.WARN)
+        vim.notify('quicker: Not in a quickfix or location list window', vim.log.levels.WARN)
         return
       end
 
