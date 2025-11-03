@@ -216,6 +216,24 @@ test('Invalid range handling works', function()
   vim.cmd('cclose')
 end)
 
+-- Test 13: Add item functionality
+test('Add item works', function()
+  vim.fn.setqflist({
+    { filename = 'test1.txt', lnum = 1, text = 'Test 1' },
+    { filename = 'test2.txt', lnum = 2, text = 'Test 2' },
+  }, 'r')
+  vim.cmd('copen')
+
+  -- We can't test vim.ui.input interactively, so we'll use the command with args
+  vim.cmd('QuickAdd This is a test note')
+
+  local items = vim.fn.getqflist()
+  assert_eq(#items, 3, 'Expected 3 items after adding')
+  assert_eq(items[2].text, 'This is a test note', 'New item should be at position 2')
+
+  vim.cmd('cclose')
+end)
+
 -- Print summary
 print('\n=== TEST SUMMARY ===')
 print('Passed: ' .. tests_passed)

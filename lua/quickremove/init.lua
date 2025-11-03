@@ -9,6 +9,7 @@ M.config = {
   keymaps = {
     remove = 'dd', -- Remove current item or visual selection
     remove_range = 'x', -- Alternative keymap for removal
+    add = 'a', -- Add a new item to the list
     undo = 'u', -- Undo last removal
   },
   -- Whether to automatically set up keymaps
@@ -190,6 +191,58 @@ M.undo = function()
   vim.notify(string.format('quickremove: Undid last removal (%d items remaining)', #previous_state), vim.log.levels.INFO)
 end
 
+--- Add a new item to the list
+M.add = function()
+  local list_type = get_list_type()
+
+  if not list_type then
+    vim.notify('quickremove: Not in a quickfix or location list window', vim.log.levels.WARN)
+    return
+  end
+
+  -- Prompt user for text
+  vim.ui.input({ prompt = 'Add note: ' }, function(text)
+    if not text or text == '' then
+      return
+    end
+
+    -- Get current list
+    local items = get_list(list_type)
+
+    -- Save current state to undo stack
+    local undo_stack = list_type == 'qf' and qf_undo_stack or loc_undo_stack
+    table.insert(undo_stack, vim.deepcopy(items))
+
+    -- Limit undo stack size
+    if #undo_stack > max_undo_levels then
+      table.remove(undo_stack, 1)
+    end
+
+    -- Get cursor position to insert after current line
+    local cursor_line = vim.fn.line('.')
+
+    -- Create new item (a note with no file/line number)
+    local new_item = {
+      filename = '',
+      lnum = 0,
+      col = 0,
+      text = text,
+      type = 'N', -- N for note
+    }
+
+    -- Insert at cursor position
+    table.insert(items, cursor_line + 1, new_item)
+
+    -- Update the list
+    set_list(list_type, items, 'r')
+
+    -- Move cursor to the new item
+    vim.fn.cursor(cursor_line + 1, 1)
+
+    local list_name = list_type == 'qf' and 'quickfix' or 'location'
+    vim.notify(string.format('quickremove: Added note to %s list', list_name), vim.log.levels.INFO)
+  end)
+end
 
 --- Clear all items from the current list
 M.clear = function()
@@ -273,6 +326,17 @@ M.setup_keymaps = function()
         })
       end
 
+      -- Add keymap
+      if config.keymaps.add then
+        vim.keymap.set('n', config.keymaps.add, function()
+          M.add()
+        end, {
+          buffer = bufnr,
+          silent = true,
+          desc = 'Add a new item to the list',
+        })
+      end
+
       -- Undo keymap
       if config.keymaps.undo then
         vim.keymap.set('n', config.keymaps.undo, function()
@@ -318,6 +382,37 @@ M.setup = function(opts)
     M.undo()
   end, {
     desc = 'Restore original quickfix/location list',
+  })
+
+  vim.api.nvim_create_user_command('QuickAdd', function(cmd_opts)
+    local text = cmd_opts.args
+    if text and text ~= '' then
+      -- If text is provided, add it directly without prompting
+      local list_type = get_list_type()
+      if not list_type then
+        vim.notify('quickremove: Not in a quickfix or location list window', vim.log.levels.WARN)
+        return
+      end
+
+      local items = get_list(list_type)
+      local cursor_line = vim.fn.line('.')
+      local new_item = {
+        filename = '',
+        lnum = 0,
+        col = 0,
+        text = text,
+        type = 'N',
+      }
+      table.insert(items, cursor_line + 1, new_item)
+      set_list(list_type, items, 'r')
+      vim.fn.cursor(cursor_line + 1, 1)
+    else
+      -- No args, use the interactive prompt
+      M.add()
+    end
+  end, {
+    nargs = '*',
+    desc = 'Add a new item to quickfix/location list',
   })
 end
 
